@@ -1,0 +1,136 @@
+//-----------------------------------------------------------------------------
+#include <iostream>
+#include <fstream>
+#include <string>
+//-----------------------------------------------------------------------------
+using namespace std;
+//-----------------------------------------------------------------------------
+const string path = "C:\\Users\\Alexander Kucherenko\\Documents\\Encrypt\\";
+#define TERMINAL_COL 80
+//-----------------------------------------------------------------------------
+struct TKEYS
+{
+	int *key;
+	int size;
+	TKEYS(istream &input);
+	~TKEYS();
+	void print();
+};
+//-----------------------------------------------------------------------------
+void TKEYS::print()
+{
+	int k = TERMINAL_COL / 4;
+	int a = 0;
+	while (a < size)
+	{
+		int ak = (a+k > size) ? size : (a+k);
+		for (int i = a; i < ak; ++i) cout << key[i] << " ";
+		cout << endl;
+		a += k;
+	}
+	
+}
+//-----------------------------------------------------------------------------
+TKEYS::~TKEYS()
+{
+	delete [] key;
+	cout << "OK" << endl;
+}
+//-----------------------------------------------------------------------------
+TKEYS::TKEYS(istream &input)
+{
+	string str;
+	int words_count = 0, word_len = 0;
+	while (getline(input, str))
+	{
+		for (unsigned i = 0; i < str.length(); ++i) 
+		{
+			if (str[i] == ' ') { 
+				if (word_len > 0) {
+					words_count++;
+					word_len = 0;
+				}
+			} else {
+				word_len++;
+			}
+		}
+		words_count++;
+	}
+	size = words_count;
+	key = new int[size];
+	int w = 0;
+	input.clear();
+	input.seekg(0);
+	key[0] = 0;
+	while (getline(input, str))
+	{
+		word_len = 0;
+		for (unsigned i = 0; i < str.length(); ++i)
+		{
+			if (str[i] == ' ' && word_len > 0) 
+			{ 
+				key[w] %= 256; 
+				w++;
+				key[w] = 0;
+				word_len = 0;
+			}
+			else 
+			{
+				if (i+1 == str.length() && word_len > 0) 
+				{
+					key[w] += (int)str[i];
+					key[w] %= 256; 
+					w++;
+					if (w < size) key[w] = 0;
+				} else 
+				if ((str[i] >= 'A' && str[i] <= 'Z') || 
+					(str[i] >= 'a' && str[i] <= 'z') ||
+					(str[i] >= 'à' && str[i] <= 'ÿ') || 
+					(str[i] >= 'À' && str[i] <= 'ß')) 
+					{
+						key[w] += (int)str[i];
+						word_len++;
+					}
+			}
+		}
+	}
+}
+//-----------------------------------------------------------------------------
+void encrypt(istream &input, ostream &output, const TKEYS &keys)
+{
+	string str;
+	while (getline(input, str) && str != "") 
+	{
+		for (unsigned i = 0; i < str.length(); ++i)
+			str[i] = (str[i] ^ (keys.key[i % keys.size]));
+		output << str << endl;	
+	}
+}
+//-----------------------------------------------------------------------------
+int main() 
+{
+	ifstream fin, fkey;
+	ofstream fout;
+
+	fin.open(path + "in.txt");
+	fout.open(path + "out.txt");
+	fkey.open(path + "key.txt");
+
+	TKEYS k(fkey);
+	k.print();
+
+	encrypt(fin, fout, k);
+
+	fin.close();
+	fout.close();
+
+	fin.open(path + "out.txt");
+	fout.open(path + "res.txt");
+
+	encrypt(fin, fout, k);
+
+	return 0;
+}
+//-----------------------------------------------------------------------------
+// By SnipGhost & Roman B.                                           02.11.2016
+//-----------------------------------------------------------------------------
