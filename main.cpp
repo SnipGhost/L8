@@ -104,6 +104,7 @@ int main()
 					c = 'b';
 				} else {
 					cout << "Введите символ ASCII: ";
+					cin.ignore(7777, '\n');
 					cin.get(c);
 				}
 				printStat(path + in, path + out, c);

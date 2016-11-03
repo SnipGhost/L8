@@ -36,7 +36,7 @@ int encryptFile(string inputfile, string outputfile, const TKEYS *keys)
 //-----------------------------------------------------------------------------
 int printStat(string sourcefile, string resultfile, char c)
 {
-	if (DEBUG) cout << "Открытие файлов .. ";
+	if (DEBUG) cout << "\nОткрытие файлов .. ";
 	FILE *fs, *fr;
 	errno_t err;
 	err = fopen_s(&fs, sourcefile.c_str(), "rb");
@@ -51,7 +51,7 @@ int printStat(string sourcefile, string resultfile, char c)
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	int stat[16][16] = { 0 };
 	unsigned char c1, c2;
-	int pos = 0, max = 0;
+	int pos = 0, max = 0, co = 0;
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Посимвольно читаем коды из бинарников, записываем стату
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -62,6 +62,7 @@ int printStat(string sourcefile, string resultfile, char c)
 		pos++;
 		if (c1 == c) 
 		{
+			co++;
 			int r = ++stat[c2 % 16][int(c2 / 16)];
 			if (r > max) max = r;
 		}
@@ -69,6 +70,18 @@ int printStat(string sourcefile, string resultfile, char c)
 		fread(&c2, sizeof(char), 1, fr);
 	} 
 	if (DEBUG) cout << "[ OK ]\n" << "Формирование таблицы .. [ -- ]\n";
+	cout << "Символ \"";
+	switch (c) {
+		case ' ': 
+			cout << "пробел";
+			break;
+		case '\n':
+			cout << "\\n";
+			break;
+		default:
+			cout << char(c);
+	}
+	cout << "\" встретился " << co << " раз(а)\n";
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Печать шапки таблицы
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
