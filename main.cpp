@@ -48,6 +48,7 @@ int main()
 					cout << "Ошибка чтения файла\n";
 				} else {
 					keys = new TKEYS(fkey);
+					fkey.close();
 				}
 				system("pause");
 				break;
