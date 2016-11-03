@@ -50,14 +50,14 @@ int main()
 					keys = new TKEYS(fkey);
 					fkey.close();
 				}
-				system("pause");
+				
 				break;
 			}
 			case 2: // Вывод массива ключей на экран
 			{
 				if (keys != NULL) keys->print();
 				else cout << "Ключи еще не сгенерированы!\n";
-				system("pause");
+				
 				break;
 			}
 			case 3: // Шифрование/дешифровка указанного файла
@@ -80,13 +80,13 @@ int main()
 				} else {
 					cout << "Ключи еще не сгенерированы!\n";
 				}
-				system("pause");
+				
 				break;
 			}
 			case 4: // Тестирование
 			{
 				cout << "Еще не готово\n";
-				system("pause");
+				
 				break;
 			}
 			case 5: // Вывод статистики по указанному символу
@@ -109,19 +109,21 @@ int main()
 					cin.get(c);
 				}
 				printStat(path + in, path + out, c);
-				system("pause");
+				
 				break;
 			}
 			case 6: // Выход и завершение работы
 			{
 				if (keys != NULL) delete keys;
-				exit(0);
-				break;
+				
+				return 0;
 			}
 			default:
 				cout << "Нет такой операции\n";
-				system("pause");
+				
 		}
+
+		system("pause");
 	}
 	return 0;
 }
